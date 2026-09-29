@@ -1,11 +1,10 @@
 services:
   - type: web
     name: samanvay-backend
-    env: docker
-    buildCommand: ""
-    startCommand: ""
-    dockerfilePath: backend/Dockerfile
-    contextPath: .
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
     envVars:
       - key: SAMANVAY_DATABASE_URL
         fromDatabase:
@@ -14,26 +13,20 @@ services:
       - key: SAMANVAY_CORS_ORIGINS
         value: https://samanvay-frontend.onrender.com
     autoDeploy: true
+
   - type: web
     name: samanvay-frontend
-    env: docker
-    buildCommand: ""
-    startCommand: ""
-    dockerfilePath: frontend/Dockerfile
-    contextPath: ./frontend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
     envVars:
       - key: VITE_API_BASE
         value: https://samanvay-backend.onrender.com/api
     autoDeploy: true
-    dependsOn:
-      - samanvay-backend
-  - type: postgres
-    name: samanvay-db
+
+databases:
+  - name: samanvay-db
     plan: free
-    envVars:
-      - key: POSTGRES_USER
-        value: samanvay
-      - key: POSTGRES_PASSWORD
-        generate: true
-      - key: POSTGRES_DB
-        value: samanvay
+    databaseName: samanvay
+    user: samanvay
