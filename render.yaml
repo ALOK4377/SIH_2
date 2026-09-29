@@ -22,7 +22,7 @@ services:
     dockerContext: ./frontend
     envVars:
       - key: VITE_API_BASE
-        value: https://samanvay-backend.onrender.com/api
+        value: https://samanvay-backend-5g8b.onrender.com/api
     autoDeploy: true
 
 databases:
