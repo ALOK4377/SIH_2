@@ -1,0 +1,21 @@
+# Samanvay backend — runtime dependencies.
+# The de-duplication ENGINE (app/ml/*) is pure standard library and needs none
+# of these; they power the FastAPI service, DB, and validation layer.
+
+fastapi>=0.110
+uvicorn[standard]>=0.29
+sqlalchemy>=2.0
+pydantic>=2.6
+pydantic-settings>=2.2
+python-multipart>=0.0.9        # CSV file uploads (UploadFile)
+
+# --- PostgreSQL (docker-compose / production). Not needed for the SQLite default.
+psycopg[binary]>=3.1
+
+# --- OPTIONAL, PLUGGABLE ACCURACY UPGRADES (documented in PROJECT_PLAN §3) -----
+# The engine already runs and reports real precision/recall without these; drop
+# them in to swap the TF-IDF space / fuzzy scorer for stronger implementations.
+# sentence-transformers>=2.7   # all-MiniLM-L6-v2 semantic embeddings
+# pgvector>=0.2                # ANN vector search in Postgres
+# rapidfuzz>=3.6               # faster, better lexical similarity
+# scikit-learn>=1.4            # trained pairwise classifier (replaces fixed weights)

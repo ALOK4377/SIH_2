@@ -1,0 +1,10 @@
+{
+  "BEARING":  {"code": "311516", "title": "Bearings and bushings"},
+  "VALVE":    {"code": "401416", "title": "Industrial valves"},
+  "FASTENER": {"code": "311616", "title": "Bolts, nuts and fasteners"},
+  "PIPE":     {"code": "401716", "title": "Pipe and pipe fittings"},
+  "CABLE":    {"code": "261216", "title": "Electrical wire and cable"},
+  "PUMP":     {"code": "401015", "title": "Pumps"},
+  "GASKET":   {"code": "311021", "title": "Gaskets and seals"},
+  "OTHER":    {"code": "000000", "title": "Unclassified"}
+}

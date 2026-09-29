@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+  /* Tabular figures everywhere numbers line up (tables, stats, codes). */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  ::selection {
+    background: #0e7c66;
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid #0e7c66;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* --- surfaces ------------------------------------------------------- */
+  .card {
+    @apply bg-surface border border-hairline rounded-xl shadow-card;
+  }
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-steel;
+  }
+
+  /* --- buttons -------------------------------------------------------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2
+      text-sm font-medium transition-colors disabled:opacity-50
+      disabled:cursor-not-allowed select-none;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-white hover:bg-ink-soft;
+  }
+  .btn-verified {
+    @apply btn bg-verified text-white hover:brightness-95;
+  }
+  .btn-ghost {
+    @apply btn border border-hairline bg-surface text-ink hover:bg-paper;
+  }
+  .btn-danger {
+    @apply btn border border-conflict/30 bg-conflict-soft text-conflict hover:bg-conflict/10;
+  }
+
+  /* --- status pills --------------------------------------------------- */
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5
+      text-[11px] font-semibold uppercase tracking-wide;
+  }
+  .pill-verified { @apply pill bg-verified-soft text-verified; }
+  .pill-attention { @apply pill bg-attention-soft text-[#9A6B12]; }
+  .pill-conflict { @apply pill bg-conflict-soft text-conflict; }
+  .pill-steel { @apply pill bg-paper text-steel border border-hairline; }
+
+  /* --- the signature: CNMC code token --------------------------------- */
+  .cnmc {
+    @apply inline-flex items-stretch overflow-hidden rounded-md border
+      border-ink/15 bg-white font-mono text-ink shadow-card;
+  }
+  .cnmc > span {
+    @apply px-2 py-1 text-sm font-medium leading-none flex items-center;
+  }
+  .cnmc .cnmc-prefix {
+    @apply bg-ink text-white font-semibold tracking-wider;
+  }
+  .cnmc .cnmc-seg + .cnmc-seg {
+    @apply border-l border-hairline;
+  }
+  .cnmc .cnmc-check {
+    @apply bg-verified-soft text-verified border-l border-verified/30 font-semibold;
+  }
+
+  /* --- data table ----------------------------------------------------- */
+  .dt {
+    @apply w-full text-sm;
+  }
+  .dt th {
+    @apply text-left text-[11px] font-semibold uppercase tracking-wider
+      text-steel px-3 py-2 border-b border-hairline whitespace-nowrap;
+  }
+  .dt td {
+    @apply px-3 py-2.5 border-b border-hairline/70 align-top;
+  }
+  .dt tbody tr:hover {
+    @apply bg-paper/70;
+  }
+}

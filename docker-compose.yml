@@ -1,0 +1,55 @@
+# Samanvay — one-command demo stack.
+#   cp .env.example .env && docker compose up --build
+#
+# Brings up Postgres 16 + pgvector, Redis (reserved for async matching at scale),
+# the FastAPI backend (auto-seeds the synthetic dataset + runs the pipeline on
+# first boot), and the React frontend. Open http://localhost:5173.
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-samanvay}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-samanvay}
+      POSTGRES_DB: ${POSTGRES_DB:-samanvay}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-samanvay}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      SAMANVAY_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-samanvay}:${POSTGRES_PASSWORD:-samanvay}@db:5432/${POSTGRES_DB:-samanvay}
+      SAMANVAY_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: http://localhost:8000/api
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Samanvay — Flowcharts (SIH PS 26099)</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px;
+    background: #0f1116; color: #e6e6e6; line-height: 1.5;
+  }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  .sub { color: #9aa0aa; margin: 0 0 28px; font-size: 14px; }
+  h2 { font-size: 19px; margin: 40px 0 10px; border-bottom: 1px solid #2a2f3a; padding-bottom: 6px; }
+  .card { background: #161a22; border: 1px solid #262b36; border-radius: 12px; padding: 18px; overflow-x: auto; }
+  .mermaid { display: flex; justify-content: center; }
+  footer { margin-top: 40px; color: #6b7280; font-size: 13px; }
+  code { background:#20242e; padding:1px 6px; border-radius:5px; }
+</style>
+</head>
+<body>
+  <h1>Samanvay — AI-Driven Material Code Standardization</h1>
+  <p class="sub">SIH 2026 · PS ID 26099 · Ministry of Petroleum &amp; Natural Gas / CPCL · <code>docs/PROJECT_PLAN.md</code> has the full plan.</p>
+
+  <h2>1 · System Architecture</h2>
+  <div class="card"><pre class="mermaid">
+flowchart TB
+    subgraph Sources["CPSE Data Sources"]
+        SAP["SAP / ERP systems"]
+        FILES["CSV / Excel exports"]
+        API["REST / OData feeds"]
+    end
+    subgraph Ingest["Ingestion Layer"]
+        ADP["Integration Adapters<br/>(SAP mock, file importer)"]
+        VAL["Validation &amp; Staging"]
+    end
+    subgraph Core["Backend — FastAPI"]
+        NORM["Normalization &amp; Enrichment"]
+        MLE["AI Matching Engine"]
+        CANON["Canonicalization + CNMC Generator"]
+        CLS["Taxonomy Classifier"]
+        REV["Review / Workflow Service"]
+        AUD["Audit &amp; Governance"]
+        AN["Analytics Service"]
+    end
+    subgraph Data["Data Stores"]
+        PG[("PostgreSQL + pgvector")]
+        REDIS[("Redis — queue / cache")]
+    end
+    subgraph Jobs["Async Workers"]
+        CEL["Celery workers<br/>(batch matching)"]
+    end
+    subgraph UI["Frontend — React"]
+        DASH["Dashboard &amp; Analytics"]
+        RUI["Review / Validation UI"]
+        SEARCH["Search &amp; Code Explorer"]
+        AUDUI["Audit Trail Viewer"]
+    end
+    SAP & FILES & API --> ADP --> VAL --> NORM
+    NORM --> MLE --> CANON --> CLS
+    MLE --> REV
+    REV -->|approved| CANON
+    Core <--> PG
+    MLE <--> REDIS
+    CEL <--> REDIS
+    CEL --> MLE
+    AN --> PG
+    UI <-->|REST /api| Core
+    CANON -->|push mappings| ADP
+    AUD --> PG
+  </pre></div>
+
+  <h2>2 · AI Matching Pipeline</h2>
+  <div class="card"><pre class="mermaid">
+flowchart LR
+    A["Raw material records"] --> B["Normalize<br/>UOM · abbreviations · specs"]
+    B --> C["Embed<br/>sentence-transformer"]
+    C --> D["Store vectors<br/>pgvector"]
+    D --> E["Blocking + ANN<br/>top-k candidates"]
+    E --> F["Hybrid pairwise scoring<br/>semantic + lexical + attributes"]
+    F --> G{"score high?"}
+    G -->|high| H["Cluster<br/>Union-Find → families"]
+    G -->|medium| R["Human review"]
+    G -->|low| X["Discard"]
+    R -->|approve| H
+    R -->|reject| X
+    H --> I["Golden record +<br/>CNMC + classification"]
+    I --> J["Mapping table<br/>local_code → CNMC"]
+    R -.feedback labels.-> F
+  </pre></div>
+
+  <h2>3 · Data Steward Workflow</h2>
+  <div class="card"><pre class="mermaid">
+flowchart TD
+    S1["Upload / sync CPSE data"] --> S2["System auto-runs pipeline"]
+    S2 --> S3["Review queue: proposed families<br/>with confidence + explanation"]
+    S3 --> S4{Steward decision}
+    S4 -->|Approve merge| S5["Assign CNMC · lock golden record"]
+    S4 -->|Reject| S6["Keep separate · log reason"]
+    S4 -->|Split / edit| S7["Adjust cluster membership"]
+    S5 & S6 & S7 --> S8["Audit trail entry (who/when/why)"]
+    S8 --> S9["Dashboard &amp; analytics update"]
+    S9 --> S10["Push standardized codes to ERPs"]
+  </pre></div>
+
+  <footer>Open this file in any browser to view the rendered diagrams (needs internet for the Mermaid CDN).</footer>
+  <script>mermaid.initialize({ startOnLoad: true, theme: "dark", flowchart: { useMaxWidth: true } });</script>
+</body>
+</html>
